@@ -28,8 +28,7 @@ def get_data_snip() -> list[tuple[str, str]]:
             data_dict[time_to_send] = message  # Замінює, якщо час вже є
         except ValueError:
             print(Fore.RED + 'Невірний формат. Використовуйте "HH:MM, повідомлення"' + Style.RESET_ALL)
-            if len(data_dict) == 0:
-                continue
+            continue
         is_end = input("Додати ще одну мітку часу з повідомленням? (yes/start): ") == 'start'
 
     return list(data_dict.items())
@@ -45,7 +44,7 @@ def schedule_daily_messages(client: TelegramClient, data: list[tuple[str, str]])
 
 
 async def main():
-    print("Запуск планувальника з миттєвою відправкою за часом...")
+    print("Запуск планувального скрипта з миттєвою відправкою за часом...")
     client = TelegramClient('sessions/session', API_ID, API_HASH)
     await client.connect()
     try:
@@ -54,7 +53,7 @@ async def main():
         schedule_daily_messages(client, data)
         scheduler.start()
 
-        print("Планувальник запущено. Очікуємо на щоденну відправку повідомлень у зазначений час...")
+        print("Планувальний скрипт запущено. Очікуємо на щоденну відправку повідомлень у зазначений час...")
         while True:
             await asyncio.sleep(60)
     finally:

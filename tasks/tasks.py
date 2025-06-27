@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from datetime import datetime
 
 from telethon import TelegramClient
 
@@ -17,5 +18,6 @@ class TaskSniper(TaskExecute):
         self.entity = entity
 
     async def run(self):
+        print(f"Відправляємо повідомлення {datetime.now().strftime("%H:%M:%S.%f")}")
         await self.client.send_message(self.entity, self.message)
-        print(f"Повідомлення '{self.message}' відправлено!")
+        print(f"Повідомлення '{self.message}' відправлено! {datetime.now().strftime("%H:%M:%S.%f")}")
