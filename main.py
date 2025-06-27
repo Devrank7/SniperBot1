@@ -21,16 +21,16 @@ def get_data_snip() -> list[tuple[str, str]]:
     data_dict: dict[str, str] = {}
 
     while not is_end:
-        data_user = input("Введите время и сообщение для отправки через запятую, например (14:30, привет): ")
+        data_user = input("Введіть час і повідомлення через кому, наприклад (14:30, привіт): ")
         try:
             time_to_send, message = map(str.strip, data_user.split(",", 1))
-            datetime.strptime(time_to_send, "%H:%M")  # Валидация времени
-            data_dict[time_to_send] = message  # Заменит, если уже было такое время
+            datetime.strptime(time_to_send, "%H:%M")  # Валідація часу
+            data_dict[time_to_send] = message  # Замінює, якщо час вже є
         except ValueError:
-            print(Fore.RED + 'Неверный формат. Используйте "HH:MM, сообщение"' + Style.RESET_ALL)
+            print(Fore.RED + 'Невірний формат. Використовуйте "HH:MM, повідомлення"' + Style.RESET_ALL)
             if len(data_dict) == 0:
                 continue
-        is_end = input("Добавить еще временную метку с сообщение? (yes/start): ") == 'start'
+        is_end = input("Додати ще одну мітку часу з повідомленням? (yes/start): ") == 'start'
 
     return list(data_dict.items())
 
@@ -41,11 +41,11 @@ def schedule_daily_messages(client: TelegramClient, data: list[tuple[str, str]])
         trigger = CronTrigger(hour=hour, minute=minute, second=0)
         task = TaskSniper(client, message)
         scheduler.add_job(task.run, trigger=trigger)
-        print(f"Запланировано: '{message}' каждый день в {hour:02d}:{minute:02d}.00.000")
+        print(f"Заплановано: '{message}' щодня о {hour:02d}:{minute:02d}.00.000")
 
 
 async def main():
-    print("Запуск планировщика с моментальным отправлением по времени...")
+    print("Запуск планувальника з миттєвою відправкою за часом...")
     client = TelegramClient('sessions/session', API_ID, API_HASH)
     await client.connect()
     try:
@@ -54,7 +54,7 @@ async def main():
         schedule_daily_messages(client, data)
         scheduler.start()
 
-        print("Планировщик запущен. Ожидаем моментальной ежедневной отправки сообщений в указанное время...")
+        print("Планувальник запущено. Очікуємо на щоденну відправку повідомлень у зазначений час...")
         while True:
             await asyncio.sleep(60)
     finally:
@@ -65,4 +65,4 @@ if __name__ == '__main__':
     try:
         asyncio.run(main())
     except KeyboardInterrupt:
-        print("⛔ Программа остановлена.")
+        print("⛔ Програму зупинено.")

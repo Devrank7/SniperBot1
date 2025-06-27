@@ -18,4 +18,4 @@ class TaskSniper(TaskExecute):
 
     async def run(self):
         await self.client.send_message(self.entity, self.message)
-        print(f"Сообщение '{self.message}' отправлено!")
+        print(f"Повідомлення '{self.message}' відправлено!")

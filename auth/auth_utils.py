@@ -3,19 +3,18 @@ from telethon import errors, TelegramClient
 
 async def auth_client(client: TelegramClient):
     if await client.is_user_authorized():
-        print('Уже авторизованы!')
+        print('Ви вже авторизовані!')
         return client
-    print("Нужно авторизоваться...")
+
+    print("Потрібна авторизація...")
     try:
-        number = input('Введите номер телефона из телеграма, например +380XXXXXXXXX: ')
-        # Если это первый вход, Telethon отправит код:
+        number = input('Введіть номер телефону з Telegram, наприклад +380XXXXXXXXX: ')
         await client.send_code_request(number)
-        code = input('Введите код, который пришел Telegram: ')
+        code = input('Введіть код, який прийшов у Telegram: ')
         await client.sign_in(phone=number, code=code)
     except errors.SessionPasswordNeededError:
-        # Требуется второй фактор — пароль от облака
-        pwd = input('Введите пароль двухфакторной аутентификации: ')
+        pwd = input('Введіть пароль двофакторної автентифікації: ')
         await client.sign_in(password=pwd)
 
-    print('Вы успешно авторизованы!')
+    print('Успішна авторизація!')
     return client
