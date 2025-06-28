@@ -15,7 +15,7 @@ load_dotenv()
 API_ID = int(os.getenv('API_ID'))
 API_HASH = os.getenv('API_HASH')
 GROUP_ID = int(os.getenv('GROUP_ID'))
-QUIK = os.getenv('QUIK_MODE').lower() == 'true'
+QUIK = str(os.getenv('QUIK_MODE')).lower() == 'true'
 
 
 def get_data_snip() -> list[tuple[str, str]]:
