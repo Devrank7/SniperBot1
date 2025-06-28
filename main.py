@@ -9,11 +9,13 @@ from telethon import TelegramClient
 
 from auth.auth_utils import auth_client
 from tasks.scheduler import scheduler
-from tasks.tasks import TaskSniper
+from tasks.tasks import TaskSniper, TaskSniperQuik
 
 load_dotenv()
 API_ID = int(os.getenv('API_ID'))
 API_HASH = os.getenv('API_HASH')
+GROUP_ID = int(os.getenv('GROUP_ID'))
+QUIK = os.getenv('QUIK_MODE').lower() == 'true'
 
 
 def get_data_snip() -> list[tuple[str, str]]:
@@ -38,7 +40,16 @@ def schedule_daily_messages(client: TelegramClient, data: list[tuple[str, str]])
     for time_str, message in data:
         hour, minute = map(int, time_str.split(":"))
         trigger = CronTrigger(hour=hour, minute=minute, second=0)
-        task = TaskSniper(client, message)
+        task = TaskSniper(client, message, entity=GROUP_ID)
+        scheduler.add_job(task.run, trigger=trigger)
+        print(f"Заплановано: '{message}' щодня о {hour:02d}:{minute:02d}.00")
+
+
+def schedule_quik_messages(client: TelegramClient, data: list[tuple[str, str]], quik: bool = True):
+    for time_str, message in data:
+        hour, minute = map(int, time_str.split(":"))
+        trigger = CronTrigger(hour=hour, minute=(minute - 1), second=58 if quik else 59)
+        task = TaskSniperQuik(client, message, quik_mode=quik, entity=GROUP_ID)
         scheduler.add_job(task.run, trigger=trigger)
         print(f"Заплановано: '{message}' щодня о {hour:02d}:{minute:02d}.00")
 
@@ -50,11 +61,13 @@ async def main():
     try:
         client = await auth_client(client)
         data: list[tuple[str, str]] = get_data_snip()
-        schedule_daily_messages(client, data)
+        schedule_quik_messages(client, data, quik=QUIK)
         scheduler.start()
 
-        print("Планувальний скрипт запущено. У зазначений час будуть відправлятись моментально вказанні повідомлення....")
-        print(Fore.YELLOW + "Попередження: Надсилання повідомлень не відбудеться у вказаний час, якщо ПК в цей час буде вимкнений або перебувати в режимі сну!" + Style.RESET_ALL)
+        print(
+            "Планувальний скрипт запущено. У зазначений час будуть відправлятись моментально вказанні повідомлення....")
+        print(
+            Fore.YELLOW + "Попередження: Надсилання повідомлень не відбудеться у вказаний час, якщо ПК в цей час буде вимкнений або перебувати в режимі сну!" + Style.RESET_ALL)
         print("Для завершення роботи скрипта натисніть Ctrl+C.")
         while True:
             await asyncio.sleep(60)
