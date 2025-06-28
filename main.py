@@ -40,7 +40,7 @@ def schedule_daily_messages(client: TelegramClient, data: list[tuple[str, str]])
         trigger = CronTrigger(hour=hour, minute=minute, second=0)
         task = TaskSniper(client, message)
         scheduler.add_job(task.run, trigger=trigger)
-        print(f"Заплановано: '{message}' щодня о {hour:02d}:{minute:02d}.00.000")
+        print(f"Заплановано: '{message}' щодня о {hour:02d}:{minute:02d}.00")
 
 
 async def main():
