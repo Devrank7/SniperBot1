@@ -31,6 +31,7 @@ class TaskSniperQuik(TaskExecute):
         self.quik_mode = quik_mode
 
     async def run(self):
+        await asyncio.sleep(0.88)
         if self.quik_mode:
             await asyncio.sleep(0.92)
         print(f"Відправляємо повідомлення {datetime.now().strftime("%H:%M:%S.%f")}")
